@@ -4,6 +4,8 @@ import Image from "next/image";
 import Button from "./Button";
 import { useCart } from "./CartProvider";
 import { useState } from "react";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 const tips = [
   { text: "5k", value: 5000 },
   { text: "10k", value: 10000 },
@@ -12,6 +14,7 @@ const tips = [
 ];
 
 export default function Paybar() {
+  const router = useRouter();
   const [tip, setTip] = useState();
 
   const handletip = (e) => {
@@ -28,9 +31,19 @@ export default function Paybar() {
 
   const totalprice = calculateTotalPrice(cart);
   const servicecharge = (totalprice * 2) / 100;
+  const final_price = totalprice + servicecharge + (tip ? tip : 0);
+  console.log("harga terakhir", final_price);
+
   const handlecacel = () => {
     resetCart();
     setTip(0);
+  };
+
+  const handlePayment = () => {
+    axios.post("api/payment_user", final_price).then((item) => {
+      console.log(item.data);
+      router.push(item.data);
+    });
   };
 
   return (
@@ -79,7 +92,7 @@ export default function Paybar() {
         </div>
         <div className="flex justify-between mt-5">
           <Button type={"NO"} text={"Cancel"} onClick={handlecacel} />
-          <Button type={"YES"} text={"PAY"} />
+          <Button type={"YES"} text={"PAY"} onClick={handlePayment} />
         </div>
       </div>
     </div>

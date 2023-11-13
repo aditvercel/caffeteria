@@ -27,7 +27,7 @@ const handler = NextAuth({
       return token;
     },
     async redirect({ url, baseUrl }) {
-      return "/";
+      return `${process.env.NEXTAUTH_URL}`;
     },
   },
 });
